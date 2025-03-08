@@ -25,8 +25,11 @@ export const login = async (data: z.infer<typeof LoginSchema>) => {
       },
     });
 
-    if (isUserInvalid(userExists) || !userExists) {
-      return { error: 'User not found - please register ' };
+    if (!userExists) {
+      return { error: 'User not found - please register' };
+    }
+    if (isUserInvalid(userExists)) {
+      return { error: 'Login invalid' };
     }
 
     await signIn('credentials', {
