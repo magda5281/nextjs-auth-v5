@@ -1,5 +1,4 @@
 'use client';
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Form,
@@ -16,16 +15,11 @@ import { LoginSchema } from '@/schemas';
 import { Input } from '@/components/ui/input';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import { register } from '@/app/actions/register';
-import { FormSuccess } from '../form-success';
+import { login } from '@/app/actions/login';
+
 import { FormError } from '../form-error';
 
 const LoginForm = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -34,40 +28,41 @@ const LoginForm = () => {
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
-    setLoading(true);
-    setError('');
-    setSuccess('');
+  const {
+    setError,
+    formState: { errors, isSubmitting },
+  } = form;
 
+  const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
     try {
-      const res = await register(data); // Call the register function
+      const res = await login(data); // Call the login function
 
       if (res.error) {
         // ✅ Correct way to check for errors
-        setError(
-          typeof res.error === 'string' ? res.error : JSON.stringify(res.error)
-        );
-        return;
+        setError('root', {
+          type: 'manual',
+          message:
+            typeof res.error === 'string'
+              ? res.error
+              : JSON.stringify(res.error),
+        });
       }
 
       if (res.success) {
-        setLoading(false);
-        setSuccess(res.success);
-        setError('');
+        // Redirect to the dashboard
+        console.log('Server is Redirecting to the dashboard');
       }
-    } catch (err) {
-      setError((err as Error).message || 'Something went wrong');
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error(error);
     }
   };
 
   return (
     <CardWrapper
-      headerLabel='Create an account'
-      title='Register'
-      backButtonHref='/auth/login'
-      backButtonLabel='Already have an account'
+      headerLabel='Login to your account'
+      title='Login'
+      backButtonHref='/auth/register'
+      backButtonLabel="Dont't have an account? Register here"
       showSocial
     >
       <Form {...form}>
@@ -84,6 +79,10 @@ const LoginForm = () => {
                       {...field}
                       placeholder='johndoe@email.com'
                       type='email'
+                      onChange={(e) => {
+                        field.onChange(e); // Update field value
+                        form.clearErrors('root'); // Clear API error
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -98,17 +97,29 @@ const LoginForm = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder='******' type='password' />
+                    <Input
+                      {...field}
+                      placeholder='******'
+                      type='password'
+                      onChange={(e) => {
+                        field.onChange(e);
+                        form.clearErrors('root');
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-          <FormSuccess message={success} />
-          <FormError message={error} />
-          <Button type='submit' className='w-full' disabled={loading}>
-            {loading ? 'Loading...' : 'Login in...'}
+
+          <FormError message={errors.root?.message} />
+          <Button
+            type='submit'
+            className='w-full'
+            disabled={form.formState.isSubmitting}
+          >
+            {form.formState.isSubmitting ? 'Is submitting...' : 'Login'}
           </Button>
         </form>
       </Form>
