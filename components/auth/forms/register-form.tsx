@@ -20,6 +20,7 @@ import { useState } from 'react';
 import { register } from '@/app/actions/register';
 import { FormSuccess } from '../form-success';
 import { FormError } from '../form-error';
+import GoogleLogin from '../google-button';
 const RegisterForm = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -139,7 +140,7 @@ const RegisterForm = () => {
           </Button>
         </form>
       </Form>
-      {/* <GoogleLogin /> */}
+      <GoogleLogin />
     </CardWrapper>
   );
 };

@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { login } from '@/app/actions/login';
 
 import { FormError } from '../form-error';
+import GoogleLogin from '../google-button';
 
 const LoginForm = () => {
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -123,7 +124,7 @@ const LoginForm = () => {
           </Button>
         </form>
       </Form>
-      {/* <GoogleLogin /> */}
+      <GoogleLogin />
     </CardWrapper>
   );
 };

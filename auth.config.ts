@@ -6,11 +6,28 @@ import { prisma } from './prisma/prisma';
 
 import bcrypt from 'bcryptjs';
 
+const googleClientId = process.env.GOOGLE_CLIENT_ID;
+if (!googleClientId) {
+  throw new Error('GOOGLE_CLIENT_ID is not defined. Check your .env file.');
+}
+
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+if (!googleClientSecret) {
+  throw new Error('GOOGLE_CLIENT_SECRET is not defined. Check your .env file.');
+}
+
 export default {
   providers: [
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID || '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      clientId: googleClientId,
+      clientSecret: googleClientSecret,
+      authorization: {
+        params: {
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code',
+        },
+      },
     }),
     Credentials({
       async authorize(credentials) {
@@ -37,5 +54,5 @@ export default {
       },
     }),
   ],
-  secret: process.env.AUTH_SECRET || 'uehr87yigfhjbver723yrpy',
+  secret: process.env.AUTH_SECRET || 'hfjhgdgsdaerwte676565wqaers',
 } satisfies NextAuthConfig;

@@ -1,5 +1,5 @@
-// import dotenv from 'dotenv';
-// dotenv.config();
+import dotenv from 'dotenv';
+dotenv.config();
 
 import NextAuth from 'next-auth';
 import { PrismaAdapter } from '@auth/prisma-adapter';
